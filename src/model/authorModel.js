@@ -1,4 +1,6 @@
 const mongoose = require("mongoose")
+require('mongoose-type-email');
+
 const authorSchema = new mongoose.Schema({
 
 
@@ -11,15 +13,15 @@ const authorSchema = new mongoose.Schema({
     },
 
     email: {
-        type: String,
-        required: true,
-        unique: true
-    },
+        type: mongoose.SchemaTypes.Email,
+           required : true,
+               unique : true
+       },
     password: {
         type: String,
         unique: true
-    },
-})
+    }
+},{timestamps : true})
 
 module.exports = mongoose.model('Author', authorSchema)
 
