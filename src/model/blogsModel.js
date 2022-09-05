@@ -10,16 +10,16 @@ const blogsSchema = new mongoose.schema({
             type: Object_id,
             ref: Author
         },
-        tag: [string],
+        tag: [String],
 
-        category: { type: string ,required:true},
+        category: { type: String ,required:true},
 
-        examples: [string],
-         subcategory: [string] ,
+        examples: [String],
+         subcategory: [String] ,
         //   createdAt, updatedAt, deletedAt: 
-          isDeleted: {type:boolean, default: false}, 
+          isDeleted: {type:Boolean, default: false}, 
         //   publishedAt: {type:string}, 
-          isPublished: { type:boolean, default: false}},
+          isPublished: { type:Boolean, default: false}},
 
           {timestamps:true});
 
