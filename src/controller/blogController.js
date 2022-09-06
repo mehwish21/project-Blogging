@@ -67,10 +67,28 @@ const createBlog = async function (req, res) {
 
 
 
+const deleteBlogsById = async function (req, res) {
 
-       
+    let Id = req.params.blogId
 
-        const deleteByquery = async function (req, res) {
+
+    let blogId = mongoose.Types.ObjectId.isValid(Id)
+    if (blogId == false) return res.send("blogId is incorrect")
+
+    let blog1 = await blogsModel.findById(Id)
+    if (blog1.isDeleted == true) return res.status(404).send()
+
+    let Blog = await blogsModel.findByIdAndUpdate(Id, { $set: { isDeleted: true, deletedAt: new Date() } });
+    if (!Blog) {
+        return res.status(404).send();
+
+    }
+    return res.status(200).send()
+
+}
+
+
+const deleteByquery = async function (req, res) {
             try {
                 if (req.query.authorId) {
                     const data = req.query.authorId
@@ -92,4 +110,4 @@ const createBlog = async function (req, res) {
             }
 
         }
-        module.exports = { createBlog, updateBlogs ,deleteByquery};
+        module.exports = { createBlog, updateBlogs, deleteByquery ,deleteBlogsById};
