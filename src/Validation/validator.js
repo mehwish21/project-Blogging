@@ -1,8 +1,8 @@
 
-// const isValid = function (value) {
-//     if (typeof value === 'undefined' || value == null) return false;
-//     return true;
-// }
+const isValid = function (value) {
+    if (typeof value === 'undefined' || value == null) return false;
+    return true;
+}
 
 // const isNotEmpty = function (value) {
 //     if (typeof value === String && value.trim().length === 0) return false;

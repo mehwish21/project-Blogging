@@ -1,5 +1,6 @@
 const { createIndexes } = require('../model/authorModel');
 const authorModel = require('../model/authorModel')
+const jwt = require("jsonwebtoken");
 
 
 // const validator = require('../Validation/validator')
@@ -150,3 +151,46 @@ module.exports.createAuthor=createAuthor
 // }
 
 // module.exports.createAuthor1 = createAuthor1
+
+
+
+
+const authorLogin=async function(req,res){
+    let data=req.body;
+    const {email,password}=data
+    // let loggedEmail=req.body.email;
+    // let loggedPassword=req.body.password;
+
+    if (Object.keys(data).length === 0) {
+        return res.status(400).send({ status: false, msg: "Data is required" })
+      }
+
+      if(!email){
+        return res.status(400).send({ status: false, msg: "Email is required" })
+    }
+    if(!password){
+        return res.status(400).send({ status: false, msg: "password is required" })
+    }
+
+    let loggedInAuthor=await authorModel.findOne({email:email,password:password});
+   
+    if(!loggedInAuthor){
+        return res.send({status:false,msg:"Invalid Credentials"});
+    }
+
+    let token = jwt.sign(
+        {
+          userId: loggedInAuthor._id,
+          batch: "Project-1",
+          organisation: "Blogging site",
+        },
+        "Project-1 Blogging-group-6"
+      );
+     
+      res.send({ status: true, data:{token:token }});
+    
+}
+
+
+
+module.exports.authorLogin=authorLogin
