@@ -1,51 +1,51 @@
-const { createIndexes } = require('../model/authorModel');
+//--------------------importing modules--------------------
 const authorModel = require('../model/authorModel')
 const jwt = require("jsonwebtoken");
+const { isValid, isNotEmpty, isWrong ,emaiValid, keysLength, isString} = require('../Validation/validator')
 
 
-const { isValid, isNotEmpty, isWrong ,emaiValid} = require('../Validation/validator')
-//{ fname: { mandatory}, lname: {mandatory}, title: {mandatory, enum[Mr, Mrs, Miss]}, email: {mandatory, valid email, unique}, password: {mandatory} }
+//-----------------------------author creation post/authors------------------------------------
 const createAuthor=async function (req, res){
     try {
     const data= req.body;
-    //console.log(data)
-    let body = Object.keys(data); //[fname,lname,title, email,,......]
-    if(body.length==0) return res.status(400).send({msg:"Please provide some data"})
+    if(keysLength(data)) return res.status(400).send({msg:"Please provide some data"})
 
-   const {fname,lname,title,email,password}=data;
+     const {fname,lname,title,email,password}=data;
    
-
+  // fname validation
         if(!fname) return res.send({msg :"fname is requried"})
         if(!isNotEmpty(fname))return res.send({msg :"fname is empty"})
         data.fname= fname.trim()
         if(!isWrong(data.fname))return res.send({msg :"fname is not valid"})
 
+  // lname validation
         if(!lname)return res.send({msg :"lname is requried"})
         if(!isNotEmpty(lname))return res.send({msg :"lname is empty"})
         data.lname= lname.trim()
         if(!isWrong(data.lname))return res.send({msg :"lname is not valid"})
-        
+     
+  // title validation
         if(!title)return res.send({msg :"title is requried"})
         if(!isNotEmpty(title))return res.send({msg :"title is empty"})
         data.title= title.trim()
         let arr =["Mr", "Mrs", "Miss"]
-          if(!arr.includes(data.title))return res.send({msg :"use only Mr, Mrs, Miss"})
+        if(!arr.includes(data.title))return res.send({msg :"use only Mr, Mrs, Miss"})
 
-
+  // email validation
         if(!email)return res.send({msg :"email is requried"})
         if(!isNotEmpty(email))return res.send({msg :"email is empty"})
         data.email= email.trim()
         if(!emaiValid(data.email))return res.send({msg :"email is not valid"})
 
-
+// password validation
         if(!password)return res.send({msg :"password is requried"}) 
-        if(typeof password != "string" )return res.send({msg :"password not accpeted"})
+        if(!isString(password))return res.send({msg :"password not accpeted"})
         if(!isNotEmpty(password)) return res.send({msg :"password is empty"}) 
         data.password= password.trim()
         if( data.password.length < 8)  return res.send({msg :"Your password must be at least 8 characters long. Please try another."})        
 
                 
-
+// author creation
         const author= await authorModel.create(data)
         res.status(201).send({msg : "created", data : author})
 
@@ -56,25 +56,7 @@ const createAuthor=async function (req, res){
     }
 }
 
-module.exports.createAuthor=createAuthor
 
-// if(isDeleted== false){
-//     make it true and send empty response with status 200
-// }
-// if (blog not found){
-//     send {
-//         status: false,
-//         msg: ""
-//       } 
-//       with status 404 
-// }
-
-
-
-
-// const a= "abc"
-// const b=typeof (a)
-// console.log(b)
 
 // const createAuthor1 = async function (req, res) {
 //     try {
@@ -163,16 +145,16 @@ module.exports.createAuthor=createAuthor
 
 
 
+
+//---------------------------------------------post/login------------------------------------
+
 const authorLogin=async function(req,res){
     let data=req.body;
     const {email,password}=data
-    // let loggedEmail=req.body.email;
-    // let loggedPassword=req.body.password;
-
-    if (Object.keys(data).length === 0) return res.status(400).send({ status: false, msg: "Data is required" })
-      
-
-      if(!email)return res.status(400).send({ status: false, msg: "Email is required" })
+    
+    if (keysLength(data)) return res.status(400).send({ status: false, msg: "Data is required" })
+    
+    if(!email)return res.status(400).send({ status: false, msg: "Email is required" })
 
     if(!password) return res.status(400).send({ status: false, msg: "password is required" })
 
@@ -181,8 +163,8 @@ const authorLogin=async function(req,res){
     if(!loggedInAuthor){
         return res.send({status:false,msg:"Invalid Credentials"});
     }
-
-    let token = jwt.sign(
+// token creation
+    let token = jwt.sign( 
         {
           userId: loggedInAuthor._id.toString(),
           batch: "Project-1",
@@ -196,5 +178,5 @@ const authorLogin=async function(req,res){
 }
 
 
-
-module.exports.authorLogin=authorLogin
+// exporting the function
+module.exports={createAuthor ,authorLogin}

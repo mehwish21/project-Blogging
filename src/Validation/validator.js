@@ -23,7 +23,24 @@ const validObjectId=function(value){
     if(mongoose.Types.ObjectId.isValid(value))return true
     return false
 }
-module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId };
+
+const isString=function(value){
+    if(typeof value==="string")
+    return true
+    return false
+}
+const typeValid=function(value){
+    if(typeof value==="object")
+    return true
+    return false
+}
+
+const keysLength=function(value){
+    if(Object.keys(value).length == 0)
+    return true
+    return false
+}
+module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength };
 
 // let a= "akhielsh"
 // if(!a.match(/^[A-Za-z]+$/)){
