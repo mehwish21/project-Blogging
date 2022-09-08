@@ -1,6 +1,7 @@
 const authorModel = require("../model/authorModel");
 const blogsModel = require("../model/blogsModel");
 const mongoose = require('mongoose');
+const {validObjectId}=require('../Validation/validator')
 
 const createBlog = async function (req, res) {
     try {
@@ -9,7 +10,7 @@ const createBlog = async function (req, res) {
 
         if (!authorId)
             return res.status(400).send({ status: false, msg: "" })
-
+            if (!validObjectId(authId)) return res.send("authorId is incorrect")
 
         let authId = await authorModel.find({ _id: authorId });
         if (authId) {
@@ -33,7 +34,7 @@ const updateBlogs = async function (req, res) {
         if (Object.keys(blogData).length == 0)
             return res.status(404).send({ status: false, msg: "Body is required" });
 
-
+            if (!validObjectId(Id)) return res.send("blogId is incorrect")
         let blog = await blogsModel.findOneAndUpdate({ _id: blogId, isDeleted: false },
             {
                 $set: { isPublished: true, body: blogData.body, title: blogData.title, publishedAt: new Date() },
@@ -60,8 +61,8 @@ const deleteBlogsById = async function (req, res) {
     let Id = req.params.blogId
 
 
-    let blogId = mongoose.Types.ObjectId.isValid(Id)
-    if (blogId == false) return res.send("blogId is incorrect")
+    
+    if (!validObjectId(Id)) return res.send("blogId is incorrect")
 
     let blog1 = await blogsModel.findById(Id)
     if (blog1.isDeleted == true) return res.status(404).send()
@@ -78,16 +79,25 @@ const deleteBlogsById = async function (req, res) {
 
 const deleteByquery = async function (req, res) {
     try {
+        let data = req.query
+        if (Object.keys(data).length == 0)
+            return res.status(404).send({ status: false, msg: "please enter any query" });
+
+            if (!Object.values(data).some(v => v))return res.status(404).send({ status: false, msg: "need value" });
+
+        if (!data) return res.send("userId  is not writen")
+
+
         if (req.query.authorId) {
             const data = req.query.authorId
 
-            let authorId = mongoose.Types.ObjectId.isValid(data)
+           
             if (!data && req.query.authorId == null) return res.send("userId  is not writen")
 
-            if (authorId == false) return res.send("authorId  is incorrect")
+            if (!validObjectId(Id)) return res.send("blogId is incorrect")
         }
-        let data = req.query
-        // if(data==null)return res.send("no filter added")
+       
+        
         const blogUpdate = await blogsModel.find(data).updateMany({ isDeleted: true, deletedAt: new Date() })
 
         if (blogUpdate.length == 0) return res.send({ status: false, msg: "no data found" })
@@ -99,6 +109,15 @@ const deleteByquery = async function (req, res) {
 
 }
 
+
+let obj = { x: null };
+let obj1 = { z:121 };
+
+const a= Object.values(obj).some(v => v);
+console.log(a)
+
+const b=Object.values(obj1).some(v => v);
+console.log(b)
 
  const filteredBlogs=async function (req,res){
     try{
@@ -123,4 +142,9 @@ const deleteByquery = async function (req, res) {
     }
 
 
-module.exports = { createBlog, updateBlogs, deleteByquery, deleteBlogsById,filteredBlogs }
+    const trymid=function(req, res){
+        res.send("worked")
+    }
+
+
+module.exports = { createBlog, updateBlogs, deleteByquery, deleteBlogsById,filteredBlogs, trymid }

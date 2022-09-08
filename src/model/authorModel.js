@@ -1,5 +1,5 @@
 const mongoose = require("mongoose")
-require('mongoose-type-email');
+
 
 const authorSchema = new mongoose.Schema({
 
@@ -13,7 +13,7 @@ const authorSchema = new mongoose.Schema({
     },
 
     email: {
-        type: mongoose.SchemaTypes.Email,
+        type: String,
         required : true,
         unique : true
        },
