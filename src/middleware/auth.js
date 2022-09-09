@@ -31,7 +31,7 @@ const authorisation = async function (req, res, next) {
     
     const decodedToken = jwt.verify(token, "Project-1 Blogging-group-6");
     const blog = await blogsModel.findById(Id)
-    if (!blog) return res.status(404).send({ msg: false, status: "data not found" })
+    if (!blog) return res.status(404).send({ msg: false, status: "" })
     let authId=blog.authorId
     let tokenid= decodedToken.userId
     if(tokenid != authId)return res.status(403).send({status:false, msg:"you are not authorised"}) 

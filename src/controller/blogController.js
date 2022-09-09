@@ -10,7 +10,7 @@ const createBlog = async function (req, res) {
     try {
         let blog = req.body;
         const {title,body,category,subcategory,tag}=blog
-        if (keysLength(blog))
+        if (!keysLength(blog))
             return res.status(400).send({ status: false, msg: "blog details required" });
 
         let authorId = req.body.authorId;
@@ -61,9 +61,11 @@ const createBlog = async function (req, res) {
                 if(typeof subcategory[i]!=="string")return res.send({msg:"Plese enter subcategory in string format"})
                 
                 if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
-            }
+            }["adskjfjasd", "abc"]
             blog.subcategory=subcategory.map(a=>a.trim())  //check the type of each subcategory element
-    
+    function abc(a,v){
+        a+v
+    }
 
         // check authorId is valid or not
         blog.authorId=authorId.trim();
@@ -73,8 +75,8 @@ const createBlog = async function (req, res) {
 
         // check given authId is present in the author document or not
         if (authId) {
-            let blogCreated = await (await blogsModel.create(blog));
-            return res.status(201).send({ status: true, data: blogCreated });
+            //let blogCreated = await  blogsModel.create(blog);
+            return res.status(201).send({ status: true, data: blog });
         }
     }
     catch (err) {
@@ -87,29 +89,44 @@ const createBlog = async function (req, res) {
 const filteredBlogs=async function (req,res){
     try{
         let filters = req.query;
-       
+         filters.isDeleted= false
+        filters.isPublished= true
+
+       //filter.isDeleted= false and filters.isPublished {authorId : kalsjdflkajd, }
         if(filters.authorId) {
            
             if(!validObjectId(filters.authorId))
             return res.send({msg:"authorId is not valid"});
-        }
-        if (keysLength(filters)) {
+            const getBlogs= await blogsModel.find(filters)
+        
+        if(getBlogs.length==0)return res.send({Status : false, msg : "No data found"})
+       return res.send (getBlogs)
 
-        let filterBolg=await blogsModel.find({"isDeleted":false,"isPublished":true})
-        if(filterBolg.length===0)
-        return res.status(404).send({status:false,msg:""})
-        return res.status(200).send({status:true,data:filterBolg})
         }
-        if (!keysLength(filters)) {
+        // if (keysLength(filters)) {
+
+        // let filterBolg=await blogsModel.find(filters)
+        // if(filterBolg.length===0)
+        // return res.status(404).send({status:false,msg:""})
+        // return res.status(200).send({status:true,data:filterBolg})
+        // }
+        // if (!keysLength(filters)) {
             
-            let getBlogs = await blogsModel.find(filters).populate("authorId")
-            if (getBlogs.length===0) {
-                return res.status(404).send({ status: false, msg: "No such blog exist" })
-            }
-            res.status(200).send({ status: true, data: getBlogs })
+        //     let getBlogs = await blogsModel.find(filters).populate("authorId")
+        //     if (getBlogs.length===0) {
+        //         return res.status(404).send({ status: false, msg: "No such blog exist" })
+        //     }
+        //     res.status(200).send({ status: true, data: getBlogs })
+        
+        // }
+        else{
+        const getBlogs= await blogsModel.find(filters)
+        
+        if(getBlogs.length==0)return res.send({Status : false, msg : "No data found"})
+       return res.send (getBlogs)
         }
     }catch(err){
-        res.send({status:false,msg:err.message});
+        res.send({status:false,msg:err.message});  
     }
 
     
@@ -122,13 +139,13 @@ const updateBlogs = async function (req, res) {
         const blogId = req.params.blogId;
         const blogData = req.body;
 
-    if (keysLength(blogData)) return res.status(404).send({ status: false, msg: "Body is required" });
+    if (!keysLength(blogData)) return res.status(404).send({ status: false, msg: "Body is required" });
     if(!blogId) return res.status(400).send({msg:"blogId is required"})
     if (!validObjectId(blogId)) return res.status(400).send("blogId is invalid")
     let blog = await blogsModel.findOneAndUpdate({ _id: blogId, isDeleted: false },
             {
                 $set: { isPublished: true, body: blogData.body, title: blogData.title, publishedAt: new Date() },
-                $push: { tags: blogData.tags, subcategory: blogData.subcategory }
+                $push: { tag: blogData.tag, subcategory: blogData.subcategory }
             },
             { new: true });
 
@@ -147,8 +164,10 @@ const updateBlogs = async function (req, res) {
 
 //------------------- delete blogs using blogId delete/blogs/:blogId--------------------------------
 const deleteBlogsById = async function (req, res) {
-
-    let Id = req.params.blogId;
+    try{
+    let data = req.params;
+    let Id= data.blogId
+    if (!Object.values(data).some(v => v))return res.status(404).send({ status: false, msg: "need path param" });
     if(!Id) return res.send("blogId must be required")
     if (!validObjectId(Id)) return res.send("blogId is incorrect")
 
@@ -161,15 +180,19 @@ const deleteBlogsById = async function (req, res) {
 
     }
     return res.status(200).send()
+}catch(err){
+    return res.status(400).send({ status: false, msg: err.message })
+}
 
 }
 
 // --------------- delete blogs by query delete/blogs----------------------------------------
-const deleteByquery = async function (req, res) {
+const deleteByQuery = async function (req, res) {
     try {
         let data = req.query
-        if (keysLength(data))
-            return res.status(404).send({ status: false, msg: "please enter any query" });
+       
+        // if (!keysLength(data))
+        //     return res.status(404).send({ status: false, msg: "please enter any query" });
 
             if (!Object.values(data).some(v => v))return res.status(404).send({ status: false, msg: "need value" });
 
@@ -197,9 +220,16 @@ const deleteByquery = async function (req, res) {
 
 }
 
+let user = {
+    names: 1,
+    roles:undefined
+};
+  
+// Check if key exists
+console.log(Object.values(user).some(a => a)); 
 
 
 
 // exporting all the functions here
 
-module.exports = { createBlog, updateBlogs, deleteByquery, deleteBlogsById,filteredBlogs }
+module.exports = { createBlog, updateBlogs, deleteByQuery, deleteBlogsById,filteredBlogs }

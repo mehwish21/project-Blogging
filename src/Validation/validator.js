@@ -36,8 +36,7 @@ const typeValid=function(value){
 }
 
 const keysLength=function(value){
-    if(Object.keys(value).length == 0)
-    return true
+    if(Object.values(value).length != 0) return true
     return false
 }
 module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength };
