@@ -10,14 +10,14 @@ router.get("/blogs",authentication, blogController.filteredBlogs)
 router.put("/blogs/:blogId",authentication,authorisation, blogController.updateBlogs);
 
 router.delete("/blogs/:blogId",authentication,authorisation,blogController.deleteBlogsById)
-router.delete('/blogs',authentication, blogController.deleteByQuery)
+router.delete('/blogs',authentication, blogController.deleteBlogByQuery)
 
 
 
 router.post("/login",authorController.authorLogin)
 
 router.all("/*", function (req, res) {
-    res.status(400).send({ status: false, message: "invalid http request" });
+    res.status(404).send({ status: false, message: "invalid http request" });
   });
 
 

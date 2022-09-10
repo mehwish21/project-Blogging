@@ -1,14 +1,14 @@
 //--------------------importing modules--------------------
 const authorModel = require('../model/authorModel')
 const jwt = require("jsonwebtoken");
-const { isValid, isNotEmpty, isWrong ,emaiValid, keysLength, isString} = require('../Validation/validator')
+const { isValid, isNotEmpty, isWrong ,emaiValid, keysLength, isString, passValid} = require('../Validation/validator')
 
 
 //-----------------------------author creation post/authors------------------------------------
 const createAuthor=async function (req, res){
     try {
     const data= req.body;
-    if(keysLength(data)) return res.status(400).send({msg:"Please provide some data"})
+    if(!keysLength(data)) return res.status(400).send({msg:"Please provide some data"})
 
      const {fname,lname,title,email,password}=data;
    
@@ -42,7 +42,7 @@ const createAuthor=async function (req, res){
         if(!isString(password))return res.send({msg :"password not accpeted"})
         if(!isNotEmpty(password)) return res.send({msg :"password is empty"}) 
         data.password= password.trim()
-        if( data.password.length < 8)  return res.send({msg :"Your password must be at least 8 characters long. Please try another."})        
+        if( !passValid(data.password))  return res.send({msg :"Your password must be at least 8 characters long. Please try another."})        
 
                 
 // author creation
@@ -152,7 +152,7 @@ const authorLogin=async function(req,res){
     let data=req.body;
     const {email,password}=data
     
-    if (keysLength(data)) return res.status(400).send({ status: false, msg: "Data is required" })
+    if (!keysLength(data)) return res.status(400).send({ status: false, msg: "Data is required" })
     
     if(!email)return res.status(400).send({ status: false, msg: "Email is required" })
 

@@ -39,7 +39,35 @@ const keysLength=function(value){
     if(Object.values(value).length != 0) return true
     return false
 }
-module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength };
+
+const passValid=function(value){
+    if(value.match(/^[a-zA-Z0-9!@#$%^&*]{8,15}$/))
+    return true
+    return false
+}
+
+
+const validArray=function(value){
+    for(let i=0;i<value;i++){
+        if(typeof value[i]==="string")return true
+        return false
+        // if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
+    }}
+
+
+    // if (!typeValid(subcategory))
+    //         return res.status(400).send({ status: false, msg: "Incorrect type of subcategory" });
+
+    //         for(let i=0;i<subcategory.length;i++){
+    //             if(typeof subcategory[i]!=="string")return res.send({msg:"Plese enter subcategory in string format"})
+                
+    //             if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
+    //         }
+    //         blog.subcategory=subcategory.map(a=>a.trim())  //check the type of each subcategory element
+    //     }
+
+
+module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid, validArray};
 
 // let a= "akhielsh"
 // if(!a.match(/^[A-Za-z]+$/)){

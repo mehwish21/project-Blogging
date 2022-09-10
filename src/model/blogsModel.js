@@ -5,11 +5,12 @@ const Object_id = mongoose.Schema.Types.ObjectId;
 const blogsSchema = new mongoose.Schema({
 
 
-    title: { type: String, required: true },
+    title: { type: String, required: true, trim: true},
     body: { type: String, required: true },
     authorId: {
         type: Object_id,
-        ref: "Author"
+        ref: "Author",
+        required :true
     },
     tag: [String],
 
