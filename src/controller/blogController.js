@@ -32,7 +32,7 @@ const createBlog = async function (req, res) {
         blog.authorId = authorId.trim();
         if (!validObjectId(blog.authorId)) return res.status(400).send({ msg: "authorId is not valid" })
 
-        //validation of category
+        //validation of category//
         if (!category) return res.status(400).send({ status: false, msg: "category is required" });
         if (!isString(category)) return res.status(400).send({ status: false, msg: "Type of category must be string" });
         if (!isNotEmpty(category)) return res.send({ msg: "category is empty" })
