@@ -1,22 +1,21 @@
 const blogsModel = require("../model/blogsModel");
 const jwt = require("jsonwebtoken");
-const mongoose= require('mongoose')
-const {validObjectId}=require('../Validation/validator')
+const { validObjectId } = require('../Validation/validator')
 
 const authentication = function (req, res, next) {
- try {
-  
+  try {
+
     let token = req.headers["x-api-key"];
     if (!token) return res.status(404).send({ status: false, msg: "token must be present" });
-    
+
     let decodedToken = jwt.verify(token, "Project-1 Blogging-group-6");
-    
+
     if (!decodedToken)
       return res.send({ status: false, msg: "Invalid Token" })
-      
+
     next();
-  
- 
+
+
   } catch (error) {
     console.log(error)
     return res.status(500).send({ status: false, Error: error.message })
@@ -26,23 +25,24 @@ const authentication = function (req, res, next) {
 
 const authorisation = async function (req, res, next) {
   try {
-   
+
     const Id = req.params.blogId
     const token = req.headers["x-api-key"];
     //find in blog data
-    if(!Id)return res.status(400).send({msg:"Please provide blogId"})
+
+    if (!Id) return res.status(400).send({ msg: "Please provide blogId" })
     if (!validObjectId(Id)) return res.status(400).send("blogId is Invalid")
-    
+
     const decodedToken = jwt.verify(token, "Project-1 Blogging-group-6");
     const blog = await blogsModel.findById(Id)
     if (!blog) return res.status(404).send({ msg: false, status: "" })
-    let authId=blog.authorId
-    let tokenid= decodedToken.userId
-    if(tokenid != authId)return res.status(403).send({status:false, msg:"you are not authorised"}) 
-    
-    next() 
-    
-   
+    let authId = blog.authorId
+    let tokenid = decodedToken.userId
+    if (tokenid != authId) return res.status(403).send({ status: false, msg: "you are not authorised" })
+
+    next()
+
+
   } catch (error) {
     console.log(error)
     return res.status(500).send({ status: false, Error: error.message })
@@ -51,55 +51,43 @@ const authorisation = async function (req, res, next) {
 
 const authorisation1 = async function (req, res, next) {
   try {
-    
+
     const data = req.query
     const token = req.headers["x-api-key"];
-    //find in blog data
-   // if(!Id)return res.status(400).send({msg:"Please provide blogId"})
-   if (!Object.keys(data).length) {
-    return res.status(400).send({ status: false, msg: "plese select key for deletion" })
-}
-   if (Object.keys(data).some(a=>a=="authorId")) {
-    if (!data.authorId) {
+
+    if (!Object.keys(data).length) {
+      return res.status(400).send({ status: false, msg: "please provide some data to delete" })
+    }
+    if (Object.keys(data).some(a => a == "authorId")) {
+      if (!data.authorId) {
         return res.status(400).send({ status: false, msg: "Author id must be present" })
-       
-    }
 
-    if (!mongoose.isValidObjectId(data.authorId)) {
+      }
+
+      if (!validObjectId(data.authorId)) {
         return res.status(400).send({ status: false, msg: "plese enter the correct length of author id" })
-        
+
+      }
     }
-}
 
-
-// let ada={
-//   abc:"asdf",
-//   alksdjf: "xyz",
-//   bsaf:"asdf"
-// }
-//  console.log(Object.keys(ada))
-//  let c=(Object.keys(ada).filter(a=>a=="alksdjf"))
-//  console.log(c)
-// let b=(Object.keys(ada).some(a=>a=="alksdjf"))
-// console.log(b)
-
-
-    //if (!validObjectId(Id)) return res.status(400).send("blogId is Invalid")
-    
+    data.isDeleted = false
     const decodedToken = jwt.verify(token, "Project-1 Blogging-group-6");
-    const blog = await blogsModel.find(data).select({authorId : 1})
-   
-  const blog2=await blogsModel.find(authorId)
-    if (!blog) return res.status(404).send({ msg: false, status: "" })
-    //let authId=blog.authorId
-  //const test=blog["authorId"].map(a=>a==)
+    const blog = await blogsModel.find(data).select({ _id: 1, authorId: 1 })
 
-    let tokenid= decodedToken.userId
-    if(tokenid != authId)return res.status(403).send({status:false, msg:"you are not authorised"}) 
-    
-    next() 
-    
-    
+
+    if (blog.length == 0) return res.status(404).send({ status: false, msg: "no data avilable" })
+
+
+    console.log(blogId)
+    const authorId = blog.filter(b => b["authorId"] == decodedToken.userId)
+
+    if (authorId.length == 0) return res.status(403).send({ status: false, msg: "you are not authorised" })
+    const blogId = blog.map(I => I["_id"])
+
+    req.validBlogId = blogId
+    next()
+
+
   } catch (error) {
     console.log(error)
     return res.status(500).send({ status: false, Error: error.message })
@@ -107,7 +95,7 @@ const authorisation1 = async function (req, res, next) {
 }
 
 
-module.exports = {authentication,authorisation,};
+module.exports = { authentication, authorisation, authorisation1 };
 
 
 

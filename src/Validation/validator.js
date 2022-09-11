@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+
 const isValid = function (value) {
     if (typeof value === 'undefined' || value == null) return false;
     return true;
@@ -21,7 +22,7 @@ const emaiValid=function(value){
 
 const validObjectId=function(value){
     if(mongoose.Types.ObjectId.isValid(value))return true
-    return false
+    return false    
 }
 
 const isString=function(value){
@@ -30,8 +31,7 @@ const isString=function(value){
     return false
 }
 const typeValid=function(value){
-    if(typeof value==="object")
-    return true
+    if(typeof value==="object") return true
     return false
 }
 
@@ -51,27 +51,17 @@ const validArray=function(value){
     for(let i=0;i<value;i++){
         if(typeof value[i]==="string")return true
         return false
-        // if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
+        
     }}
 
-
-    // if (!typeValid(subcategory))
-    //         return res.status(400).send({ status: false, msg: "Incorrect type of subcategory" });
-
-    //         for(let i=0;i<subcategory.length;i++){
-    //             if(typeof subcategory[i]!=="string")return res.send({msg:"Plese enter subcategory in string format"})
-                
-    //             if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
-    //         }
-    //         blog.subcategory=subcategory.map(a=>a.trim())  //check the type of each subcategory element
-    //     }
+    const notEmptyArray= function(value){
+        for(let i=0;i<value;i++){
+            if(value[i].trim().length == 0)return true
+            return false
+        }}
+    
 
 
-module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid, validArray};
+module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid, validArray, notEmptyArray};
 
-// let a= "akhielsh"
-// if(!a.match(/^[A-Za-z]+$/)){
-//     return console.log(false)
-// }else{
-// return console.log(true)
-// }
+
