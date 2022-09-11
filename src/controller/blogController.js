@@ -1,9 +1,8 @@
 
 //--------------------importing modules-------------------------------------
-const { status } = require("init");
 const authorModel = require("../model/authorModel");
 const blogsModel = require("../model/blogsModel");
-const { validObjectId, typeValid, isString, isNotEmpty, keysLength, validArray, notEmptyArray } = require('../Validation/validator');
+const { validObjectId, typeValid, isString, isNotEmpty, keysLength } = require('../Validation/validator');
 
 
 //------------------------ creation of blogs post/blogs----------------------
@@ -12,40 +11,34 @@ const createBlog = async function (req, res) {
         const blog = req.body;
         const { title, body, category, subcategory, tag } = blog
         if (!keysLength(blog)) return res.status(400).send({ status: false, msg: "blog details required" });
-
         const authorId = req.body.authorId;
-
-
-
 
         // Title validation
         if (!title) return res.status(400).send({ status: false, msg: "title is required" });
-        if (!isString(blog.title)) return res.send({ msg: "Type of title  must be string" });
-        if (!isNotEmpty(title)) return res.send({ msg: "title is empty" })
+        if (!isString(title)) return res.status(400).send({ msg: "Type of title  must be string" });
+        if (!isNotEmpty(title)) return res.status(400).send({ msg: "title is empty" })
         blog.title = title.trim();
 
 
         // validation of body
         if (!body) return res.status(400).send({ status: false, msg: "body is required" });
-        if (!isString(blog.body)) return res.status(400).send({ status: false, msg: "Type of body must be string" });
-        if (!isNotEmpty(blog.body)) return res.send({ msg: "body is empty" })
+        if (!isString(body)) return res.status(400).send({ status: false, msg: "Type of body must be string" });
+        if (!isNotEmpty(body)) return res.status(400).send({ msg: "body is empty" })
         blog.body = body.trim();
 
 
         //validation of authorId 
         if (!authorId) return res.status(400).send({ status: false, msg: "authorId is required" });
         blog.authorId = authorId.trim();
-        if (!validObjectId(blog.authorId)) return res.send({ msg: "authorId is not valid" })
+        if (!validObjectId(blog.authorId)) return res.status(400).send({ msg: "authorId is not valid" })
 
         //validation of category
-        if (!category)
-            return res.status(400).send({ status: false, msg: "category is required" });
+        if (!category) return res.status(400).send({ status: false, msg: "category is required" });
         if (!isString(category)) return res.status(400).send({ status: false, msg: "Type of category must be string" });
+        if (!isNotEmpty(category)) return res.send({ msg: "category is empty" })
         blog.category = category.trim();
-        if (!isNotEmpty(blog.category)) return res.send({ msg: "category is empty" })
-
-
-        if(Object.keys(blog).some(t=>t=="tag")){
+        
+       if(Object.keys(blog).some(t=>t=="tag")){
             
              
             if (!typeValid(tag))return res.status(400).send({ status: false, msg: "Incorrect type of tags" });
@@ -77,9 +70,9 @@ const createBlog = async function (req, res) {
 
    
 
-        
+        //find authorId in athorModel
 
-        let authId = await authorModel.findOne({ _id: blog.authorId }); //find authorId in athorModel
+        let authId = await authorModel.findOne({ _id: blog.authorId }); 
 
         // check given authId is present in the author document or not
         if (!authId) return res.send({ status: false, msg: "authot not fond" })
@@ -124,6 +117,7 @@ const filteredBlogs = async function (req, res) {
 
 
 //------------------------- update the blogs put/blogs/:blogId--------------------------------
+
 const updateBlogs = async function (req, res) {
     try {
         const blogId = req.params.blogId;
@@ -196,9 +190,6 @@ const deleteBlogsById = async function (req, res) {
         let data = req.params;
         let Id = data.blogId
 
-
-
-
         let blog1 = await blogsModel.findById(Id)
         if (blog1.isDeleted == true) return res.status(404).send({ status: false, msg: "Blog is alredy deleted" })
 
@@ -221,13 +212,11 @@ const deleteBlogByQuery = async function (req, res) {
 
         let ids = req.validBlogId
 
-
         let blogs = await blogsModel.find({ _id: { $in: ids } }).updateMany({ isDeleted: true, deleteAt: Date.now() })
 
         return res.status(200).send({ status: true, data: blogs })
 
-
-    } catch (err) {
+        } catch (err) {
         console.log(err)
         return res.status(500).send({ status: false, msg: err.message })
     }

@@ -8,46 +8,46 @@ const { isNotEmpty, isWrong, emaiValid, keysLength, isString, passValid } = requ
 const createAuthor = async function (req, res) {
     try {
         const data = req.body;
-        if (!keysLength(data)) return res.status(400).send({ msg: "Please provide some data" })
+        if (!keysLength(data)) return res.status(400).send({ status :false, msg: "Please provide some data" })
 
         const { fname, lname, title, email, password } = data;
 
         // fname validation
-        if (!fname) return res.send({ msg: "fname is requried" })
-        if (!isNotEmpty(fname)) return res.send({ msg: "fname is empty" })
+        if (!fname) return res.send({status :false, msg: "fname is requried" })
+        if (!isNotEmpty(fname)) return res.status(400).send({status :false, msg: "fname is empty" })
         data.fname = fname.trim()
-        if (!isWrong(data.fname)) return res.send({ msg: "fname is not valid" })
+        if (!isWrong(data.fname)) return res.status(400).send({status :false, msg: "fname is not valid" })
 
         // lname validation
-        if (!lname) return res.send({ msg: "lname is requried" })
-        if (!isNotEmpty(lname)) return res.send({ msg: "lname is empty" })
+        if (!lname) return res.status(400).send({ status :false,msg: "lname is requried" })
+        if (!isNotEmpty(lname)) return res.status(400).send({status :false, msg: "lname is empty" })
         data.lname = lname.trim()
-        if (!isWrong(data.lname)) return res.send({ msg: "lname is not valid" })
+        if (!isWrong(data.lname)) return res.status(400).send({status :false, msg: "lname is not valid" })
 
         // title validation
-        if (!title) return res.send({ msg: "title is requried" })
-        if (!isNotEmpty(title)) return res.send({ msg: "title is empty" })
+        if (!title) return res.status(400).send({status :false, msg: "title is requried" })
+        if (!isNotEmpty(title)) return res.status(400).send({status :false, msg: "title is empty" })
         data.title = title.trim()
         let arr = ["Mr", "Mrs", "Miss"]
-        if (!arr.includes(data.title)) return res.send({ msg: "use only Mr, Mrs, Miss" })
+        if (!arr.includes(data.title)) return res.status(400).send({status :false, msg: "use only Mr, Mrs, Miss" })
 
         // email validation
-        if (!email) return res.send({ msg: "email is requried" })
-        if (!isNotEmpty(email)) return res.send({ msg: "email is empty" })
+        if (!email) return res.status(400).send({status :false,  msg: "email is requried" })
+        if (!isNotEmpty(email)) return res.status(400).send({status :false, msg: "email is empty" })
         data.email = email.trim()
-        if (!emaiValid(data.email)) return res.send({ msg: "email is not valid" })
+        if (!emaiValid(data.email)) return res.status(400).send({status :false, msg: "email is not valid" })
 
         // password validation
-        if (!password) return res.send({ msg: "password is requried" })
-        if (!isString(password)) return res.send({ msg: "password not accpeted" })
-        if (!isNotEmpty(password)) return res.send({ msg: "password is empty" })
+        if (!password) return res.status(400).send({status :false, msg: "password is requried" })
+        if (!isString(password)) return res.status(400).send({status :false, msg: "password not accpeted" })
+        if (!isNotEmpty(password)) return res.status(400).send({status :false, msg: "password is empty" })
         data.password = password.trim()
-        if (!passValid(data.password)) return res.send({ msg: "Please enter a valid password" })
+        if (!passValid(data.password)) return res.status(400).send({status :false, msg: "Please enter a valid password" })
 
 
         // author creation
         const author = await authorModel.create(data)
-        res.status(201).send({ msg: "created", data: author })
+        res.status(201).send({status :true, msg: "created", data: author })
 
 
     } catch (err) {
@@ -55,6 +55,8 @@ const createAuthor = async function (req, res) {
         res.status(500).send({ msg: "Error", error: err.message })
     }
 }
+
+//------------------------POST /login--------------------------------------------
 
 const authorLogin = async function (req, res) {
     let data = req.body;
@@ -68,7 +70,7 @@ const authorLogin = async function (req, res) {
 
     let loggedInAuthor = await authorModel.findOne({ email: email, password: password });
 
-    if (!loggedInAuthor) return res.send({ status: false, msg: "Invalid Credentials" });
+    if (!loggedInAuthor) return res.status(403).send({ status: false, msg: "Invalid Credentials" });
 
     // token creation
     let token = jwt.sign(
@@ -80,7 +82,7 @@ const authorLogin = async function (req, res) {
         "Project-1 Blogging-group-6"
     );
     res.setHeader("x-auth-token", token);
-    res.send({ status: true, data: { token: token } });
+    res.status(200).send({ status: true, data: { token: token } });
 
 }
 

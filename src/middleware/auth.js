@@ -1,6 +1,10 @@
+//--------------------------------importing modules---------------------------------------------------
+
 const blogsModel = require("../model/blogsModel");
 const jwt = require("jsonwebtoken");
 const { validObjectId } = require('../Validation/validator')
+
+//---------------------------------Authentication-------------------------------------------------------
 
 const authentication = function (req, res, next) {
   try {
@@ -22,6 +26,7 @@ const authentication = function (req, res, next) {
   }
 }
 
+//------------------------------------Authorisation---------------------------------------------------
 
 const authorisation = async function (req, res, next) {
   try {
@@ -48,6 +53,9 @@ const authorisation = async function (req, res, next) {
     return res.status(500).send({ status: false, Error: error.message })
   }
 }
+
+
+//-----------------------------authorisation for delete blogs by query delete/blogs---------------------
 
 const authorisation1 = async function (req, res, next) {
   try {
@@ -94,6 +102,7 @@ const authorisation1 = async function (req, res, next) {
   }
 }
 
+// exporting all the middlewares here
 
 module.exports = { authentication, authorisation, authorisation1 };
 

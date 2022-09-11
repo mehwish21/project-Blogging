@@ -1,5 +1,8 @@
+//---------------------------------------importing modules--------------------------------------------
+
 const mongoose = require("mongoose")
 
+//----------------------------------------Creating Schema---------------------------------------------
 
 const authorSchema = new mongoose.Schema({
 
@@ -23,5 +26,6 @@ const authorSchema = new mongoose.Schema({
     }
 },{timestamps : true})
 
+// exporting all the model here
 module.exports = mongoose.model('Author', authorSchema)
 

@@ -1,4 +1,8 @@
+//---------------------------------------importing modules--------------------------------------------
+
 const mongoose = require('mongoose')
+
+//----------------------------------------Creating Schema---------------------------------------------
 
 const Object_id = mongoose.Schema.Types.ObjectId;
 
@@ -31,6 +35,8 @@ const blogsSchema = new mongoose.Schema({
     {
         timestamps: true
     });
+
+//---------------------------------- exporting all the model here--------------------------------------
 
 module.exports = mongoose.model('Blog', blogsSchema)
 
