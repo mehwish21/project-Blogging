@@ -51,22 +51,22 @@ const passValid=function(value){
 }
 
 
-const validArray=function(value){
-    for(let i=0;i<value;i++){
-        if(typeof value[i]==="string")return true
-        return false
+// const validArray=function(value){
+//     for(let i=0;i<value;i++){
+//         if(typeof value[i]==="string")return true
+//         return false
         
-    }}
+//     }}
 
-const notEmptyArray= function(value){
-        for(let i=0;i<value;i++){
-            if(value[i].trim().length == 0)return true
-            return false
-        }}
+// const notEmptyArray= function(value){
+//         for(let i=0;i<value;i++){
+//             if(value[i].trim().length == 0)return true
+//             return false
+//         }}
     
 
 //------------------------------ exporting all the functions here------------------------------------
 
-module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid, validArray, notEmptyArray};
+module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid};
 
 
