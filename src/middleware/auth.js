@@ -15,7 +15,7 @@ const authentication = function (req, res, next) {
     let decodedToken = jwt.verify(token, "Project-1 Blogging-group-6");
 
     if (!decodedToken)
-      return res.send({ status: false, msg: "Invalid Token" })
+      return res.status(401).send({ status: false, msg: "Invalid Token" })
 
     next();
 

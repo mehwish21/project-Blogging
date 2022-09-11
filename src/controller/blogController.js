@@ -35,7 +35,7 @@ const createBlog = async function (req, res) {
         //validation of category//
         if (!category) return res.status(400).send({ status: false, msg: "category is required" });
         if (!isString(category)) return res.status(400).send({ status: false, msg: "Type of category must be string" });
-        if (!isNotEmpty(category)) return res.send({ msg: "category is empty" })
+        if (!isNotEmpty(category)) return res.status(400).send({ msg: "category is empty" })
         blog.category = category.trim();
         
        if(Object.keys(blog).some(t=>t=="tag")){
@@ -46,9 +46,9 @@ const createBlog = async function (req, res) {
            if (tag.length==0)return res.status(400).send({ status: false, msg: "empty" });
            
             for(let i=0;i<tag.length;i++){
-                if(typeof tag[i]!=="string")return res.send({msg:"Plese enter tags in string format"})
+                if(typeof tag[i]!=="string")return res.status(400).send({msg:"Plese enter tags in string format"})
                 
-                if(!isNotEmpty(tag[i])) return res.send({msg:"tag is empty"});
+                if(!isNotEmpty(tag[i])) return res.status(400).send({msg:"tag is empty"});
             }
             blog.tag=tag.map(a=>a.trim()) //check the type of each tag element
         }
@@ -58,12 +58,12 @@ const createBlog = async function (req, res) {
              
             if (!typeValid(subcategory))return res.status(400).send({ status: false, msg: "Incorrect type of subcategory" });
 
-           if (subcategory.length==0)return res.status(400).send({ status: false, msg: "empty" });
+           if (subcategory.length==0)return res.status(400).send({ status: false, msg: "subcategory is empty" });
            
             for(let i=0;i<subcategory.length;i++){
-                if(typeof subcategory[i]!=="string")return res.send({msg:"Plese enter subcategory in string format"})
+                if(typeof subcategory[i]!=="string")return res.status(400).send({msg:"Plese enter subcategory in string format"})
                 
-                if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
+                if(!isNotEmpty(subcategory[i])) return res.status(400).send({msg:"subcategory value is empty"});
             }
             blog.subcategory=subcategory.map(a=>a.trim()) //check the type of each tag element
         }
@@ -75,14 +75,14 @@ const createBlog = async function (req, res) {
         let authId = await authorModel.findOne({ _id: blog.authorId }); 
 
         // check given authId is present in the author document or not
-        if (!authId) return res.send({ status: false, msg: "authot not fond" })
+        if (!authId) return res.status(404).send({ status: false, msg: "authot not found" })
 
         const blogCreated = await blogsModel.create(blog);
         return res.status(201).send({ status: true, data: blogCreated });
 
     }
     catch (err) {
-        return res.status(400).send({ status: false, msg: err.message })
+        return res.status(500).send({ status: false, msg: err.message })
     }
 
 }
@@ -97,19 +97,19 @@ const filteredBlogs = async function (req, res) {
         //filter.isDeleted= false and filters.isPublished {authorId : kalsjdflkajd, }
         if (Object.keys(filters).some(a => a == "authorId")) {
 
-            if (!filters.authorId) return res.send("provide id")
+            if (!filters.authorId) return res.status(400).send("provide authorid")
             if (!validObjectId(filters.authorId))
-                return res.send({ msg: "authorId is not valid" });
+                return res.status(400).send({ msg: "authorId is not valid" });
         }
 
 
         const getBlogs = await blogsModel.find(filters)
 
-        if (getBlogs.length == 0) return res.send({ status: false, msg: "No data found" })
-        return res.send({ status: true, data: getBlogs })
+        if (getBlogs.length == 0) return res.status(404).send({ status: false, msg: "No data found" })
+        return res.status(200).send({ status: true, data: getBlogs })
 
     } catch (err) {
-        res.send({ status: false, msg: err.message });
+        res.status(500).send({ status: false, msg: err.message });
     }
 
 
@@ -122,15 +122,15 @@ const updateBlogs = async function (req, res) {
     try {
         const blogId = req.params.blogId;
         const blogData = req.body;
-        const { title, body, category, subcategory, tag } = blogData
+        const {  body, category, subcategory, tag } = blogData
         if (!keysLength(blogData)) return res.status(404).send({ status: false, msg: "Body is required" });
 
-        if (!blogId) return res.status(400).send({ msg: "blogId is required" })
-        if (!validObjectId(blogId)) return res.status(400).send("blogId is invalid")
+        if (!blogId) return res.status(400).send({status: false, msg: "blogId is required" })
+        if (!validObjectId(blogId)) return res.status(400).send({msg :"blogId is invalid"})
 
         if (Object.keys(blogData).some(a => a == "body")) {
-            if (!blogData.body) return res.send({ status: false, msg: "plese provid some data" })
-            if (!isString(body)) return res.send({ status: false, msg: "plese provid data in string" })
+            if (!blogData.body) return res.status(400).send({ status: false, msg: "plese provid some data" })
+            if (!isString(body)) return res.status(400).send({ status: false, msg: "plese provid data in string" })
         }
 
         if(Object.keys(blogData).some(t=>t=="tag")){
@@ -141,9 +141,9 @@ const updateBlogs = async function (req, res) {
            if (tag.length==0)return res.status(400).send({ status: false, msg: "tag empty" });
            
             for(let i=0;i<tag.length;i++){
-                if(typeof tag[i]!=="string")return res.send({msg:"Plese enter tags in string format"})
+                if(typeof tag[i]!=="string")return res.status(400).send({msg:"Plese enter tags in string format"})
                 
-                if(!isNotEmpty(tag[i])) return res.send({msg:"tag is empty"});
+                if(!isNotEmpty(tag[i])) return res.status(400).send({msg:"tag is empty"});
             }
             blogData.tag=tag.map(a=>a.trim()) //check the type of each tag element
         }
@@ -156,9 +156,9 @@ const updateBlogs = async function (req, res) {
            if (subcategory.length==0)return res.status(400).send({ status: false, msg: "subcategory is empty" });
            
             for(let i=0;i<subcategory.length;i++){
-                if(typeof subcategory[i]!=="string")return res.send({msg:"Plese enter subcategory in string format"})
+                if(typeof subcategory[i]!=="string")return res.status(400).send({msg:"Plese enter subcategory in string format"})
                 
-                if(!isNotEmpty(subcategory[i])) return res.send({msg:"subcategory is empty"});
+                if(!isNotEmpty(subcategory[i])) return res.status(400).send({msg:"subcategory is empty"});
             }
             blogData.subcategory=subcategory.map(a=>a.trim()) //check the type of each tag element
         }
