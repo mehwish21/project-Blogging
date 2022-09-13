@@ -8,10 +8,10 @@ const { validObjectId, typeValid, isString, isNotEmpty, keysLength, validBoolean
 //------------------------ creation of blogs post/blogs----------------------
 const createBlog = async function (req, res) {
     try {
-        const blog = req.body;
+        let blog = req.body;
         let { title, body, category, subcategory, tag, isPublished } = blog
         if (!keysLength(blog)) return res.status(400).send({ status: false, msg: "blog details required" });
-        const authorId = req.body.authorId;
+        let authorId = req.body.authorId;
 
         // Title validation
         if (!title) return res.status(400).send({ status: false, msg: "title is required" });
@@ -120,7 +120,7 @@ const filteredBlogs = async function (req, res) {
 const updateBlogs = async function (req, res) {
     try {
         const blogId = req.params.blogId;
-        const blogData = req.body;
+        let blogData = req.body;
         let { title, body, category, subcategory, tag, isPublished, publishedAt } = blogData
 
         if (!keysLength(blogData)) return res.status(404).send({ status: false, msg: "Body is required" });
