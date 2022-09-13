@@ -10,7 +10,7 @@ const createAuthor = async function (req, res) {
         const data = req.body;
         if (!keysLength(data)) return res.status(400).send({ status :false, msg: "Please provide some data" })
 
-        const { fname, lname, title, email, password } = data;
+        let { fname, lname, title, email, password } = data;
 
         // fname validation
         if (!fname) return res.send({status :false, msg: "fname is requried" })
@@ -36,6 +36,9 @@ const createAuthor = async function (req, res) {
         if (!isNotEmpty(email)) return res.status(400).send({status :false, msg: "email is empty" })
         data.email = email.trim()
         if (!emaiValid(data.email)) return res.status(400).send({status :false, msg: "email is not valid" })
+        const sameEmail = await authorModel.find({email : {$in: email}})
+        if(sameEmail.length !== 0) return res.status(400).send({status :false, msg: "Email is Already Registered" })
+
 
         // password validation
         if (!password) return res.status(400).send({status :false, msg: "password is requried" })
@@ -78,6 +81,8 @@ const authorLogin = async function (req, res) {
             userId: loggedInAuthor._id.toString(),
             batch: "Project-1",
             organisation: "Blogging site",
+            iat : Math.floor(Date.now() / 1000),
+            exp : Math.floor(Date.now() / 1000) +60*60
         },
         "Project-1 Blogging-group-6"
     );

@@ -50,6 +50,11 @@ const passValid=function(value){
     return false
 }
 
+const validBoolean= function (value){
+    if(typeof value === "boolean") return true
+    return false
+}
+
 
 // const validArray=function(value){
 //     for(let i=0;i<value;i++){
@@ -67,6 +72,6 @@ const passValid=function(value){
 
 //------------------------------ exporting all the functions here------------------------------------
 
-module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid};
+module.exports = { isValid, isNotEmpty, isWrong,emaiValid,validObjectId,isString, typeValid,keysLength, passValid, validBoolean};
 
 

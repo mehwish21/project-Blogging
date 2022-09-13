@@ -86,7 +86,7 @@ const authorisation1 = async function (req, res, next) {
     if (blog.length == 0) return res.status(404).send({ status: false, msg: "no data avilable" })
 
 
-    console.log(blogId)
+  
     const authorId = blog.filter(b => b["authorId"] == decodedToken.userId)
 
     if (authorId.length == 0) return res.status(403).send({ status: false, msg: "you are not authorised" })
